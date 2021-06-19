@@ -1,0 +1,5 @@
+name: Warning
+version: ${project.version}
+main: warning.warning.Warning
+commands:
+  경고:
