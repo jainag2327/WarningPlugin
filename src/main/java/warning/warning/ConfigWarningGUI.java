@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class ConfigWarningGUI {
         ItemMeta meta = item.getItemMeta();
         List<String> list = new ArrayList<>();
         for(int i : serverWarningConfig.getWarningMute().keySet()){
-            list.add(ChatColor.YELLOW+"§l경고 : "+i+"회 -->"+" 뮤트 처벌시간 : "+serverWarningConfig.getMute(i)+"초");
+            list.add(ChatColor.YELLOW+"§l경고 : "+i+"회 -->"+" 뮤트 처벌시간 : "+transSec(serverWarningConfig.getMute(i)));
         }
         meta.setLore(list);
         item.setItemMeta(meta);
@@ -65,7 +64,7 @@ public class ConfigWarningGUI {
         ItemMeta meta = item.getItemMeta();
         List<String> list = new ArrayList<>();
         for(int i : serverWarningConfig.getWarningBan().keySet()){
-            list.add(ChatColor.YELLOW+"§l경고 : "+i+"회 -->"+" 밴 처벌시간 : "+serverWarningConfig.getBan(i)+"초");
+            list.add(ChatColor.YELLOW+"§l경고 : "+i+"회 -->"+" 밴 처벌시간 : "+transSec(serverWarningConfig.getBan(i)));
         }
         meta.setLore(list);
         item.setItemMeta(meta);
@@ -99,7 +98,7 @@ public class ConfigWarningGUI {
         ItemMeta meta = muteTime.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE+"§l경고 "+serverWarningConfig.getMuteWarnings()+"회 뮤트 처벌 설정");
         meta.setLore(Collections.singletonList(ChatColor.YELLOW+"§l현재 처벌 시간 : "
-                + ChatColor.WHITE + ChatColor.BOLD +serverWarningConfig.getMuteTime() + "§l초"));
+                + ChatColor.WHITE + ChatColor.BOLD +transSec(serverWarningConfig.getMuteTime())));
         muteTime.setItemMeta(meta);
         inv.setItem(12,muteTime);
     }
@@ -108,9 +107,19 @@ public class ConfigWarningGUI {
         ItemMeta meta = banTime.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE+"§l경고 "+serverWarningConfig.getBanWarnings()+"회 밴 처벌 설정");
         meta.setLore(Collections.singletonList(ChatColor.YELLOW+"§l현재 처벌 시간 : "
-                + ChatColor.WHITE + ChatColor.BOLD +serverWarningConfig.getBanTime() + "§l초"));
+                + ChatColor.WHITE + ChatColor.BOLD +transSec(serverWarningConfig.getBanTime())));
         banTime.setItemMeta(meta);
         inv.setItem(14,banTime);
+    }
+
+    public static String transSec(int time) {
+        if(time == 0) { return "0초"; }
+        int day = time / ( 60* 60* 24 );
+        int hour = (time - day * 60 * 60 * 24) / ( 60*60 );
+        int minute = (time - day * 60 * 60 * 24 - hour * 3600) / 60;
+        int second = time % 60;
+
+        return ChatColor.WHITE+""+ChatColor.BOLD+day+"일 "+hour+"시간 "+minute+"분 "+second+"초";
     }
 
 }

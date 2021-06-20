@@ -70,7 +70,7 @@ public class PlayerWaring {
     public void reduceBanTime() { BanTime--; }
 
 
-
+    public boolean isCause(int warnings) { return causeMap.containsKey(warnings); }
 
     public void addCause(int warnings, String cause) { causeMap.put(warnings,cause); }
 

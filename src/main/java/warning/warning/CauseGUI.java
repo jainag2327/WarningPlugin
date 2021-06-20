@@ -39,7 +39,6 @@ public class CauseGUI {
         } else {
             inv.setItem(49,getPlayerHead(player));
         }
-
         SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for(int i = 1; i <= playerWaring.getWarnings(); i++ ) {
             String to = fm.format(playerWaring.getDay(i));

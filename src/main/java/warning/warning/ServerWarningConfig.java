@@ -76,32 +76,32 @@ public class ServerWarningConfig {
     public int getBanTime() { return banTime; }
 
 
-    public void addMuteWarningCount() { warningMuteCount++; }
+    public void addMuteWarningCount() { warningMuteCount += 1; }
 
-    public void addBanWarningCount() { warningBanCount++; }
+    public void addBanWarningCount() { warningBanCount += 1; }
 
-    public void addMuteTime() { muteTime++; }
+    public void addMuteTime() { muteTime += 3600; } // 1시간 증가
 
-    public void addBanTime() { banTime++; }
-
-
-    public void reduceMuteWarningCount() { warningMuteCount--; }
-
-    public void reduceBanWarningCount() { warningBanCount--; }
-
-    public void reduceMuteTime() { muteTime--; }
-
-    public void reduceBanTime() { banTime--; }
+    public void addBanTime() { banTime += 3600; }
 
 
-    public void addDoubleMuteTime() { muteTime += 10; }
+    public void reduceMuteWarningCount() { warningMuteCount -= 1; }
 
-    public void addDoubleBanTime() { banTime += 10; }
+    public void reduceBanWarningCount() { warningBanCount -= 1; }
+
+    public void reduceMuteTime() { muteTime -= 3600; }
+
+    public void reduceBanTime() { banTime -= 3600; }
 
 
-    public void reduceDoubleMuteTime() { muteTime -= 10; }
+    public void addDoubleMuteTime() { muteTime += 86400; }      // 1일 증가
 
-    public void reduceDoubleBanTime() { banTime -= 10; }
+    public void addDoubleBanTime() { banTime += 86400; }
+
+
+    public void reduceDoubleMuteTime() { muteTime -= 86400; }
+
+    public void reduceDoubleBanTime() { banTime -= 86400; }
 
 
 

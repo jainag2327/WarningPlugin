@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Date;
@@ -48,7 +49,8 @@ public class WarningEvent implements Listener {
                     Player mutePlayer = Bukkit.getPlayer(name);
                     if(mutePlayer == null) { return; }
                     mutePlayer.sendMessage(WarningCommand.ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                    mutePlayer.sendMessage(WarningCommand.ChatStyle("남은 시간 : "+serverWarningConfig.getMute(playerWaring.getWarnings()) +"초"));
+                    mutePlayer.sendMessage(WarningCommand.ChatStyle("남은 시간 : "
+                            +ConfigWarningGUI.transSec(serverWarningConfig.getMute(playerWaring.getWarnings()))));
                     mutePlayer.chat(" ");
                 }
                 if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
@@ -115,11 +117,19 @@ public class WarningEvent implements Listener {
                     serverWarningConfig.addDoubleMuteTime();
                     player.openInventory(configWarningGUI.getInv());
                 } else if(e.getClick() == ClickType.RIGHT) {
-                    if(serverWarningConfig.getMuteTime() == 0) { return; }
+                    if(serverWarningConfig.getMuteTime() <= 0) {
+                        serverWarningConfig.setMuteTime(0);
+                        player.openInventory(configWarningGUI.getInv());
+                        return;
+                    }
                     serverWarningConfig.reduceMuteTime();
                     player.openInventory(configWarningGUI.getInv());
                 } else if(e.getClick() == ClickType.SHIFT_RIGHT) {
-                    if(serverWarningConfig.getMuteTime() - 10 < 0) { return; }
+                    if(serverWarningConfig.getMuteTime() - 86400 <= 0) {
+                        serverWarningConfig.setMuteTime(0);
+                        player.openInventory(configWarningGUI.getInv());
+                        return;
+                    }
                     serverWarningConfig.reduceDoubleMuteTime();
                     player.openInventory(configWarningGUI.getInv());
                 }
@@ -132,11 +142,19 @@ public class WarningEvent implements Listener {
                     serverWarningConfig.addDoubleBanTime();
                     player.openInventory(configWarningGUI.getInv());
                 } else if(e.getClick() == ClickType.RIGHT) {
-                    if(serverWarningConfig.getBanTime() == 0) { return; }
+                    if(serverWarningConfig.getBanTime() <= 0) {
+                        serverWarningConfig.setBanTime(0);
+                        player.openInventory(configWarningGUI.getInv());
+                        return;
+                    }
                     serverWarningConfig.reduceBanTime();
                     player.openInventory(configWarningGUI.getInv());
                 } else if(e.getClick() == ClickType.SHIFT_RIGHT) {
-                    if(serverWarningConfig.getBanTime() - 10 < 0) { return; }
+                    if(serverWarningConfig.getBanTime() - 86400 <= 0) {
+                        serverWarningConfig.setBanTime(0);
+                        player.openInventory(configWarningGUI.getInv());
+                        return;
+                    }
                     serverWarningConfig.reduceDoubleBanTime();
                     player.openInventory(configWarningGUI.getInv());
                 }
@@ -186,7 +204,7 @@ public class WarningEvent implements Listener {
         if(playerWaring.isMute()) {
             e.setCancelled(true);
             player.sendMessage(WarningCommand.ChatStyle("현재 뮤트상태입니다."));
-            player.sendMessage(WarningCommand.ChatStyle("남은시간 : "+playerWaring.getMuteTime()+"초"));
+            player.sendMessage(WarningCommand.ChatStyle("남은시간 : "+ ConfigWarningGUI.transSec(playerWaring.getMuteTime())));
             return;
         }
 
@@ -217,6 +235,15 @@ public class WarningEvent implements Listener {
                 playerWaring.reduceMuteTime();
             }
         }.runTaskTimer(Warning.instance, 0,20);
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        Player player = e.getPlayer();
+        if(WarningCommand.isMute.containsKey(player.getName())) {
+            player.chat(" ");
+        }
+
     }
 
 
