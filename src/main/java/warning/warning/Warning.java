@@ -24,6 +24,9 @@ public final class Warning extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        getLogger().info("제작 : SoonSaL_");
+        getLogger().info("2차 배포 / 수정 금지");
+        getLogger().info("플러그인이 활성화 되었습니다.");
         if(!baseFolder.exists()) {
             if(baseFolder.mkdir()) {
                 getLogger().info("Config 폴더 생성 완료.");
@@ -124,7 +127,7 @@ public final class Warning extends JavaPlugin {
     public void FileToMap() {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(ChatFile));
-            String fileLine = null;
+            String fileLine;
             while ((fileLine = reader.readLine()) != null) {
                 WarningCommand.isMute.put(fileLine.split(",")[0],Integer.parseInt(fileLine.split(",")[1]));
             }

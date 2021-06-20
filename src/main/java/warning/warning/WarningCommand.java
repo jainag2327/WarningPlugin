@@ -35,6 +35,7 @@ public class WarningCommand implements CommandExecutor {
 
         switch (args[0]) {
             case "관리":
+                if(!player.isOp()) { return true; }
                 WarningGUI warningGUI = new WarningGUI();
                 player.openInventory(warningGUI.getInv());
                 break;
@@ -253,6 +254,7 @@ public class WarningCommand implements CommandExecutor {
                     player.sendMessage(ChatStyle("해당 플레이어는 밴 상태가 아닙니다."));
                 }
                 playerWaring.changeBan();
+                Bukkit.dispatchCommand(player,"unban "+name);
                 player.sendMessage(ChatStyle("밴이 강제로 해제되었습니다."));
                 break;
             default:
@@ -273,7 +275,7 @@ public class WarningCommand implements CommandExecutor {
             return;
         }
         player.sendMessage(ChatStyle("/경고 주기 (플레이어) (사유)"));
-        player.sendMessage(ChatStyle("/경고 설정 (플레이어) (횟수) (사유) "));
+        player.sendMessage(ChatStyle("/경고 설정 (플레이어) (횟수)"));
         player.sendMessage(ChatStyle("/경고 사유 (플레이어)"));
         player.sendMessage(ChatStyle("/경고 관리"));
         player.sendMessage(ChatStyle("/경고 사유변경 (플레이어) (경고횟수) (변경할 사유)"));
