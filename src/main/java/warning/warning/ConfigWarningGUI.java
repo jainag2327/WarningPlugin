@@ -7,6 +7,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -25,19 +26,50 @@ public class ConfigWarningGUI {
 
     public Inventory getInv() {
         inv = Bukkit.createInventory(null,27,"§l경고 관리");
-        int[] slot = { 0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26 };
-        int[] slots = { 9,10,11,15,16,17 };
+        int[] slot = { 0,1,2,3,4,5,6,7,8,18,19,21,22,23,25,26 };
+        int[] slots = { 9,10,15,16,17 };
         settingItem(Material.STAINED_GLASS_PANE,1,15," ",null,slot);
         settingItem(Material.IRON_FENCE,1,0," ",null,slots);
-        settingItem(Material.ENDER_PORTAL_FRAME,1,0,ChatColor.WHITE+"§l사용법",
-                Arrays.asList(ChatColor.YELLOW+"§l좌클릭시 1초증가",ChatColor.YELLOW+"§l쉬프트 좌클릭시 10초증가",
-                        ChatColor.YELLOW+"§l우클릭시 1초감소",ChatColor.YELLOW+"§l쉬프트 우클릭시 10초감소"),13);
+        settingItem(Material.STONE_BUTTON,1,0,ChatColor.WHITE+"§l뮤트 적용하기",null,21);
+        settingItem(Material.STONE_BUTTON,1,0,ChatColor.WHITE+"§l밴 적용하기",null,23);
+        settingItem(Material.ENDER_PORTAL_FRAME,1,0,ChatColor.WHITE+"§l적용된 뮤트경고 목록",null,11);
+        settingItem(Material.ENDER_PORTAL_FRAME,1,0,ChatColor.WHITE+"§l적용된 밴 경고 목록",null,15);
+        settingItem(Material.PAPER,1,0,ChatColor.WHITE+"§l뮤트 초기화"
+                , Collections.singletonList(ChatColor.YELLOW + "§l뮤트에대한 경고조건이 초기화됩니다."),20);
+        settingItem(Material.PAPER,1,0,ChatColor.WHITE+"§l밴 초기화"
+                , Collections.singletonList(ChatColor.YELLOW + "§l밴에대한 경고조건이 초기화됩니다."),24);
+        WarningShow();
+        WarningBanShow();
         setWarningMuteItem();
         setWarningBanItem();
         setMuteTime();
         setBanTime();
 
         return inv;
+    }
+
+    public void WarningShow() {
+        ItemStack item = inv.getContents()[11];
+        ItemMeta meta = item.getItemMeta();
+        List<String> list = new ArrayList<>();
+        for(int i : serverWarningConfig.getWarningMute().keySet()){
+            list.add(ChatColor.YELLOW+"§l경고 : "+i+"회 -->"+" 뮤트 처벌시간 : "+serverWarningConfig.getMute(i)+"초");
+        }
+        meta.setLore(list);
+        item.setItemMeta(meta);
+        inv.setItem(11,item);
+    }
+
+    public void WarningBanShow() {
+        ItemStack item = inv.getContents()[15];
+        ItemMeta meta = item.getItemMeta();
+        List<String> list = new ArrayList<>();
+        for(int i : serverWarningConfig.getWarningBan().keySet()){
+            list.add(ChatColor.YELLOW+"§l경고 : "+i+"회 -->"+" 밴 처벌시간 : "+serverWarningConfig.getBan(i)+"초");
+        }
+        meta.setLore(list);
+        item.setItemMeta(meta);
+        inv.setItem(15,item);
     }
 
     public void settingItem(Material material, int amount, int data, String name, List<String> lore, int... slot) {
@@ -66,7 +98,8 @@ public class ConfigWarningGUI {
     public void setMuteTime() {
         ItemMeta meta = muteTime.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE+"§l경고 "+serverWarningConfig.getMuteWarnings()+"회 뮤트 처벌 설정");
-        meta.setLore(Collections.singletonList(ChatColor.YELLOW+"§l현재 처벌 시간 : "+ ChatColor.WHITE + ChatColor.BOLD +serverWarningConfig.getMuteTime() + "§l초"));
+        meta.setLore(Collections.singletonList(ChatColor.YELLOW+"§l현재 처벌 시간 : "
+                + ChatColor.WHITE + ChatColor.BOLD +serverWarningConfig.getMuteTime() + "§l초"));
         muteTime.setItemMeta(meta);
         inv.setItem(12,muteTime);
     }
@@ -74,7 +107,8 @@ public class ConfigWarningGUI {
     public void setBanTime() {
         ItemMeta meta = banTime.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE+"§l경고 "+serverWarningConfig.getBanWarnings()+"회 밴 처벌 설정");
-        meta.setLore(Collections.singletonList(ChatColor.YELLOW+"§l현재 처벌 시간 : "+ ChatColor.WHITE + ChatColor.BOLD +serverWarningConfig.getBanTime() + "§l초"));
+        meta.setLore(Collections.singletonList(ChatColor.YELLOW+"§l현재 처벌 시간 : "
+                + ChatColor.WHITE + ChatColor.BOLD +serverWarningConfig.getBanTime() + "§l초"));
         banTime.setItemMeta(meta);
         inv.setItem(14,banTime);
     }

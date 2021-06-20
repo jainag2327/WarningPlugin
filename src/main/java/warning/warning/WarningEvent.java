@@ -43,18 +43,19 @@ public class WarningEvent implements Listener {
 
             if(e.getCurrentItem().getType().equals(Material.MUSHROOM_SOUP)) {
                 playerWaring.addWarning();
-                if(playerWaring.getWarnings() == serverWarningConfig.getMuteWarnings()) {
-                    WarningCommand.isMute.put(name,serverWarningConfig.getMuteTime());
+                if(serverWarningConfig.isMuteWarning(playerWaring.getWarnings())) {
+                    WarningCommand.isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
                     Player mutePlayer = Bukkit.getPlayer(name);
                     if(mutePlayer == null) { return; }
-                    mutePlayer.sendMessage(WarningCommand.ChatStyle("경고 "+serverWarningConfig.getMuteWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                    mutePlayer.sendMessage(WarningCommand.ChatStyle("남은 시간 : "+serverWarningConfig.getMuteTime() +"초"));
+                    mutePlayer.sendMessage(WarningCommand.ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
+                    mutePlayer.sendMessage(WarningCommand.ChatStyle("남은 시간 : "+serverWarningConfig.getMute(playerWaring.getWarnings()) +"초"));
                     mutePlayer.chat(" ");
                 }
-                if(playerWaring.getWarnings() == serverWarningConfig.getBanWarnings()) {
+                if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
                     playerWaring.changeBan();
-                    playerWaring.setBanTime(serverWarningConfig.getBanTime());
-                    Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
+                    playerWaring.setBanTime(serverWarningConfig.getBan(playerWaring.getWarnings()));
+                    Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",
+                            new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
                     Player banPlayer = Bukkit.getPlayer(name);
                     if(banPlayer == null) { return; }
                     banPlayer.kickPlayer("차단되었습니다. 사유 : 경고누적");
@@ -139,6 +140,34 @@ public class WarningEvent implements Listener {
                     serverWarningConfig.reduceDoubleBanTime();
                     player.openInventory(configWarningGUI.getInv());
                 }
+            }
+            if(e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.WHITE+"§l뮤트 적용하기")) {
+                if(serverWarningConfig.isMuteWarning(serverWarningConfig.getMuteWarnings())
+                        && serverWarningConfig.isMuteTime(serverWarningConfig.getMuteTime())) {
+                    player.sendMessage(WarningCommand.ChatStyle("이미 적용되었습니다."));
+                    return;
+                }
+                serverWarningConfig.addMuteWarning(serverWarningConfig.getMuteWarnings(),serverWarningConfig.getMuteTime());
+                configWarningGUI.WarningShow();
+                player.openInventory(configWarningGUI.getInv());
+            }
+            if(e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.WHITE+"§l밴 적용하기")) {
+                if(serverWarningConfig.isMuteWarning(serverWarningConfig.getMuteWarnings())
+                        && serverWarningConfig.isMuteTime(serverWarningConfig.getMuteTime())) {
+                    player.sendMessage(WarningCommand.ChatStyle("이미 적용되었습니다."));
+                    return;
+                }
+                serverWarningConfig.addBanWarning(serverWarningConfig.getBanWarnings(),serverWarningConfig.getBanTime());
+                configWarningGUI.WarningBanShow();
+                player.openInventory(configWarningGUI.getInv());
+            }
+            if(e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.WHITE+"§l뮤트 초기화")) {
+                serverWarningConfig.removeMuteTime();
+                player.openInventory(configWarningGUI.getInv());
+            }
+            if(e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.WHITE+"§l밴 초기화")) {
+                serverWarningConfig.removeBanTime();
+                player.openInventory(configWarningGUI.getInv());
             }
 
         }

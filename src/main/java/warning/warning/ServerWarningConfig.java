@@ -1,14 +1,23 @@
 package warning.warning;
 
+import com.google.gson.Gson;
+import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.HashMap;
+
 public class ServerWarningConfig {
-    private static ServerWarningConfig serverWarningConfig = null;
+    private transient static ServerWarningConfig serverWarningConfig = null;
 
     public static ServerWarningConfig getInstance() {
         if(serverWarningConfig == null) { serverWarningConfig = new ServerWarningConfig(); }
         return serverWarningConfig;
     }
 
+    @SuppressWarnings("FieldMayBeFinal")
+    private  HashMap<Integer,Integer> warningMute = new HashMap<>();
 
+    @SuppressWarnings("FieldMayBeFinal")
+    private  HashMap<Integer,Integer> warningBan = new HashMap<>();
 
     private int warningMuteCount = 1;
 
@@ -17,6 +26,34 @@ public class ServerWarningConfig {
     private int muteTime = 1;
 
     private int banTime = 1;
+
+    public static void loadData(FileConfiguration config) {
+        serverWarningConfig = new Gson().fromJson(config.getString("server"),ServerWarningConfig.class);
+    }
+
+
+
+    public boolean isMuteWarning(int warning) { return warningMute.containsKey(warning); }
+
+    public boolean isMuteTime(int time) { return warningMute.containsValue(time); }
+
+    public boolean isBanWarning(int warning) { return warningBan.containsKey(warning); }
+
+    public void addMuteWarning(int warning, int time) { warningMute.put(warning, time); }
+
+    public void addBanWarning(int warning, int time) { warningBan.put(warning, time); }
+
+    public HashMap<Integer,Integer> getWarningMute() { return warningMute; }
+
+    public HashMap<Integer,Integer> getWarningBan() { return warningBan; }
+
+    public Integer getMute(int warning) { return warningMute.get(warning); }
+
+    public Integer getBan(int warning) { return warningBan.get(warning); }
+
+    public void removeMuteTime() { warningMute.clear(); }
+
+    public void removeBanTime() { warningBan.clear(); }
 
 
 

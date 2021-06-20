@@ -1,7 +1,6 @@
 package warning.warning;
 
 import com.google.gson.Gson;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -19,6 +18,7 @@ public final class Warning extends JavaPlugin {
     public FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
     public File configFile = new File(getDataFolder(),"ConfigData.yml");
+    public FileConfiguration config2 = YamlConfiguration.loadConfiguration(configFile);
 
     public File ChatFile = new File(getDataFolder(),"ChatData.yml");
 
@@ -32,10 +32,9 @@ public final class Warning extends JavaPlugin {
                 getLogger().info("Config 폴더 생성 완료.");
             }
         }
-        makeFile(configFile);
         makeFile(ChatFile);
         instance = this;
-        fileToClass();
+        ServerWarningConfig.loadData(config2);
         PlayerWaring.loadData(config);
         FileToMap();
         getCommand("경고").setExecutor(new WarningCommand());
@@ -54,7 +53,7 @@ public final class Warning extends JavaPlugin {
     @Override
     public void onDisable() {
         SavePlayerData();
-        SaveConfigData();
+        SaveTheFile();
         MapToFile();
     }
 
@@ -70,32 +69,12 @@ public final class Warning extends JavaPlugin {
         }
     }
 
-    public void SaveConfigData() {
-        try {
-            ServerWarningConfig serverWarningConfig = ServerWarningConfig.getInstance();
-            FileWriter writer = new FileWriter(configFile, false);
-            writer.write(serverWarningConfig.getBanWarnings()+",");
-            writer.write(serverWarningConfig.getMuteWarnings()+",");
-            writer.write(serverWarningConfig.getBanTime()+",");
-            writer.write(serverWarningConfig.getMuteTime()+",");
-            writer.close();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void fileToClass() {
-        try {
-            ServerWarningConfig serverWarningConfig = ServerWarningConfig.getInstance();
-            BufferedReader reader = new BufferedReader(new FileReader(configFile));
-            String fileLine;
-            while ((fileLine = reader.readLine()) != null) {
-                serverWarningConfig.setBanWarnings(Integer.parseInt(fileLine.split(",")[0]));
-                serverWarningConfig.setMuteWarnings(Integer.parseInt(fileLine.split(",")[1]));
-                serverWarningConfig.setBanTime(Integer.parseInt(fileLine.split(",")[2]));
-                serverWarningConfig.setMuteTime(Integer.parseInt(fileLine.split(",")[3]));
-            }
-        }catch (IOException e) {
+    public void SaveTheFile() {
+        ServerWarningConfig serverWarningConfig = ServerWarningConfig.getInstance();
+        config2.set("server",new Gson().toJson(serverWarningConfig));
+        try{
+            config2.save(configFile);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -62,18 +62,19 @@ public class WarningCommand implements CommandExecutor {
                         Bukkit.broadcastMessage(ChatStyle(p.getName()+"님이 경고를 받았습니다."));
                         Bukkit.broadcastMessage(ChatStyle("현재 누적경고 : "+playerWaring.getWarnings()));
 
-                        if(playerWaring.getWarnings() == serverWarningConfig.getMuteWarnings()) {
-                            isMute.put(name,serverWarningConfig.getMuteTime());
+                        if(serverWarningConfig.isMuteWarning(playerWaring.getWarnings())) {
+                            isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
                             Player mutePlayer = Bukkit.getPlayer(name);
                             if(mutePlayer == null) { return true; }
-                            mutePlayer.sendMessage(ChatStyle("경고 "+serverWarningConfig.getMuteWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                            mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMuteTime() +"초"));
+                            mutePlayer.sendMessage(ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
+                            mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMute(playerWaring.getWarnings()) +"초"));
                             mutePlayer.chat(" ");
                         }
-                        if(playerWaring.getWarnings() == serverWarningConfig.getBanWarnings()) {
+                        if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
                             playerWaring.changeBan();
-                            playerWaring.setBanTime(serverWarningConfig.getBanTime());
-                            Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
+                            playerWaring.setBanTime(serverWarningConfig.getBan(playerWaring.getWarnings()));
+                            Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",
+                                    new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
                             Player banPlayer = Bukkit.getPlayer(name);
                             if(banPlayer == null) { return true; }
                             banPlayer.kickPlayer("차단되었습니다. 사유 : 경고누적");
@@ -85,18 +86,19 @@ public class WarningCommand implements CommandExecutor {
                     Bukkit.broadcastMessage(ChatStyle(p.getName()+"님이 경고를 받았습니다."));
                     Bukkit.broadcastMessage(ChatStyle("사유 : "+cause));
                     Bukkit.broadcastMessage(ChatStyle("현재 누적경고 : "+playerWaring.getWarnings()));
-                    if(playerWaring.getWarnings() == serverWarningConfig.getMuteWarnings()) {
-                        isMute.put(name,serverWarningConfig.getMuteTime());
+                    if(serverWarningConfig.isMuteWarning(playerWaring.getWarnings())) {
+                        isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
                         Player mutePlayer = Bukkit.getPlayer(name);
                         if(mutePlayer == null) { return true; }
-                        mutePlayer.sendMessage(ChatStyle("경고 "+serverWarningConfig.getMuteWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                        mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMuteTime() +"초"));
+                        mutePlayer.sendMessage(ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
+                        mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMute(playerWaring.getWarnings()) +"초"));
                         mutePlayer.chat(" ");
                     }
-                    if(playerWaring.getWarnings() == serverWarningConfig.getBanWarnings()) {
+                    if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
                         playerWaring.changeBan();
-                        playerWaring.setBanTime(serverWarningConfig.getBanTime());
-                        Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
+                        playerWaring.setBanTime(serverWarningConfig.getBan(playerWaring.getWarnings()));
+                        Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",
+                                new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
                         Player banPlayer = Bukkit.getPlayer(name);
                         if(banPlayer == null) { return true; }
                         banPlayer.kickPlayer("차단되었습니다. 사유 : 경고누적");
@@ -118,18 +120,19 @@ public class WarningCommand implements CommandExecutor {
                         playerWaring.addCause(playerWaring.getWarnings(),null);
                         Bukkit.broadcastMessage(ChatStyle(offlinePlayer.getName()+"님이 경고를 받았습니다."));
                         Bukkit.broadcastMessage(ChatStyle("현재 누적경고 : "+playerWaring.getWarnings()));
-                        if(playerWaring.getWarnings() == serverWarningConfig.getMuteWarnings()) {
-                            isMute.put(name,serverWarningConfig.getMuteTime());
+                        if(serverWarningConfig.isMuteWarning(playerWaring.getWarnings())) {
+                            isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
                             Player mutePlayer = Bukkit.getPlayer(name);
                             if(mutePlayer == null) { return; }
-                            mutePlayer.sendMessage(ChatStyle("경고 "+serverWarningConfig.getMuteWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                            mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMuteTime() +"초"));
+                            mutePlayer.sendMessage(ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
+                            mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMute(playerWaring.getWarnings()) +"초"));
                             mutePlayer.chat(" ");
                         }
-                        if(playerWaring.getWarnings() == serverWarningConfig.getBanWarnings()) {
+                        if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
                             playerWaring.changeBan();
-                            playerWaring.setBanTime(serverWarningConfig.getBanTime());
-                            Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
+                            playerWaring.setBanTime(serverWarningConfig.getBan(playerWaring.getWarnings()));
+                            Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",
+                                    new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
                             Player banPlayer = Bukkit.getPlayer(name);
                             if(banPlayer == null) { return; }
                             banPlayer.kickPlayer("차단되었습니다. 사유 : 경고누적");
@@ -141,18 +144,19 @@ public class WarningCommand implements CommandExecutor {
                     Bukkit.broadcastMessage(ChatStyle(offlinePlayer.getName()+"님이 경고를 받았습니다."));
                     Bukkit.broadcastMessage(ChatStyle("사유 : "+cause));
                     Bukkit.broadcastMessage(ChatStyle("현재 누적경고 : "+playerWaring.getWarnings()));
-                    if(playerWaring.getWarnings() == serverWarningConfig.getMuteWarnings()) {
-                        isMute.put(name,serverWarningConfig.getMuteTime());
+                    if(serverWarningConfig.isMuteWarning(playerWaring.getWarnings())) {
+                        isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
                         Player mutePlayer = Bukkit.getPlayer(name);
                         if(mutePlayer == null) { return; }
-                        mutePlayer.sendMessage(ChatStyle("경고 "+serverWarningConfig.getMuteWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                        mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMuteTime() +"초"));
+                        mutePlayer.sendMessage(ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
+                        mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMute(playerWaring.getWarnings()) +"초"));
                         mutePlayer.chat(" ");
                     }
-                    if(playerWaring.getWarnings() == serverWarningConfig.getBanWarnings()) {
+                    if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
                         playerWaring.changeBan();
-                        playerWaring.setBanTime(serverWarningConfig.getBanTime());
-                        Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
+                        playerWaring.setBanTime(serverWarningConfig.getBan(playerWaring.getWarnings()));
+                        Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",
+                                new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
                         Player banPlayer = Bukkit.getPlayer(name);
                         if(banPlayer == null) { return; }
                         banPlayer.kickPlayer("차단되었습니다. 사유 : 경고누적");
@@ -183,18 +187,19 @@ public class WarningCommand implements CommandExecutor {
                     }
                     playerWaring.setWarning(size);
                     player.sendMessage(ChatStyle(offlinePlayer.getName()+"님의 경고가 "+size+"(으)로 변경되었습니다."));
-                    if(playerWaring.getWarnings() == serverWarningConfig.getMuteWarnings()) {
-                        isMute.put(name,serverWarningConfig.getMuteTime());
+                    if(serverWarningConfig.isMuteWarning(playerWaring.getWarnings())) {
+                        isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
                         Player mutePlayer = Bukkit.getPlayer(name);
                         if(mutePlayer == null) { return; }
-                        mutePlayer.sendMessage(ChatStyle("경고 "+serverWarningConfig.getMuteWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                        mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMuteTime() +"초"));
+                        mutePlayer.sendMessage(ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
+                        mutePlayer.sendMessage(ChatStyle("남은 시간 : "+serverWarningConfig.getMute(playerWaring.getWarnings()) +"초"));
                         mutePlayer.chat(" ");
                     }
-                    if(playerWaring.getWarnings() == serverWarningConfig.getBanWarnings()) {
+                    if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
                         playerWaring.changeBan();
-                        playerWaring.setBanTime(serverWarningConfig.getBanTime());
-                        Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
+                        playerWaring.setBanTime(serverWarningConfig.getBan(playerWaring.getWarnings()));
+                        Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",
+                                new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
                         Player banPlayer = Bukkit.getPlayer(name);
                         if(banPlayer == null) { return; }
                         banPlayer.kickPlayer("차단되었습니다. 사유 : 경고누적");
@@ -233,14 +238,13 @@ public class WarningCommand implements CommandExecutor {
                 PlayerWaring playerWaring = PlayerWaring.getPlayerWarning(name);
                 if(!playerWaring.isMute()) {
                     player.sendMessage(ChatStyle("해당 플레이어는 뮤트상태가 아닙니다."));
+                    return true;
                 }
                 playerWaring.changeMute();
                 isMute.remove(name);
                 Player mutePlayer = Bukkit.getPlayer(name);
+                if(mutePlayer == null) { return true; }
                 player.sendMessage(ChatStyle("뮤트가 강제로 해제되었습니다."));
-                if(mutePlayer != null) {
-                    mutePlayer.sendMessage(ChatStyle("뮤트가 강제로 해제되었습니다."));
-                }
                 break;
             case "밴해제":
                 if(!player.isOp()) { return true; }
@@ -252,6 +256,7 @@ public class WarningCommand implements CommandExecutor {
                 playerWaring = PlayerWaring.getPlayerWarning(name);
                 if(!playerWaring.isBan()) {
                     player.sendMessage(ChatStyle("해당 플레이어는 밴 상태가 아닙니다."));
+                    return true;
                 }
                 playerWaring.changeBan();
                 Bukkit.dispatchCommand(player,"unban "+name);
