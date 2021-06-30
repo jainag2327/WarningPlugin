@@ -1,9 +1,13 @@
-package warning.warning;
+package warning.warning.Data;
 
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import warning.warning.Warning;
+import warning.warning.subWarning.WarningCommand;
 
 import java.util.*;
 
@@ -14,7 +18,7 @@ public class PlayerWaring {
     public static PlayerWaring getPlayerWarning(UUID uuid) { return warMap.containsKey(uuid) ? warMap.get(uuid) : new PlayerWaring(uuid); }
 
     public static PlayerWaring getPlayerWarning(String name) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);    //테스트 필요 오프라인플레이어 다른쓰레드 사용 안함
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
         UUID uuid = offlinePlayer.getUniqueId();
 
         return warMap.containsKey(uuid) ? warMap.get(uuid) : new PlayerWaring(uuid);
@@ -50,9 +54,13 @@ public class PlayerWaring {
 
     public void changeBan() { ban = !ban; }
 
+    public void setBan(boolean ban) { this.ban = ban; }
+
     public boolean isMute() { return mute; }
 
     public void changeMute() { mute = !mute; }
+
+    public void setMute(boolean mute) { this.mute = mute; }
 
     public void unMute() { mute = false; }
 
@@ -138,5 +146,52 @@ public class PlayerWaring {
             UUID uuid = UUID.fromString(key);
             warMap.put(uuid,new Gson().fromJson(config.getString(key),PlayerWaring.class));
         });
+    }
+
+    public void startMute(UUID uuid) {
+        PlayerWaring playerWaring = PlayerWaring.getPlayerWarning(uuid);
+        Player player = Bukkit.getPlayer(uuid);
+        playerWaring.setMute(true);
+        if(playerWaring.getMuteTime() == 0) {
+            if(player != null) {
+                playerWaring.setMuteTime(WarningCommand.isMute.get(player.getName()));
+            } else {
+                Warning.instance.getServer().getScheduler().runTask(Warning.instance, ()-> {
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                    playerWaring.setMuteTime(WarningCommand.isMute.get(offlinePlayer.getName()));
+                });
+            }
+        } else {
+            playerWaring.setMuteTime(playerWaring.getMuteTime());
+        }
+        if(player != null) {
+            player.sendMessage(WarningCommand.ChatStyle("뮤트가 활성화 되었습니다."));
+        }
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                if(playerWaring.getMuteTime() == 0) {
+                    Player mutePlayer = Bukkit.getPlayer(playerWaring.getUUID());
+                    if(mutePlayer != null) {
+                        mutePlayer.sendMessage(WarningCommand.ChatStyle("뮤트가 해제되었습니다."));
+                    }
+                    if(player != null) {
+                        WarningCommand.isMute.remove(player.getName());
+                    } else {
+                        Warning.instance.getServer().getScheduler().runTask(Warning.instance, ()-> {
+                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                            WarningCommand.isMute.remove(offlinePlayer.getName());
+                        });
+                    }
+                    playerWaring.setMute(false);
+                    cancel();
+                    return;
+                }
+                playerWaring.reduceMuteTime();
+            }
+        }.runTaskTimerAsynchronously(Warning.instance, 0,20);
+
     }
 }

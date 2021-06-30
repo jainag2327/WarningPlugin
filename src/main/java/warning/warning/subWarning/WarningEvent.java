@@ -1,9 +1,6 @@
-package warning.warning;
+package warning.warning.subWarning;
 
-import org.bukkit.BanList;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,9 +8,15 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.scheduler.BukkitRunnable;
+import warning.warning.Data.PlayerWaring;
+import warning.warning.GUI.CauseGUI;
+import warning.warning.GUI.ConfigWarningGUI;
+import warning.warning.GUI.WarningGUI;
+import warning.warning.GUI.WarningPlayerGUI;
+import warning.warning.Data.ServerWarningConfig;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class WarningEvent implements Listener {
 
@@ -45,30 +48,37 @@ public class WarningEvent implements Listener {
             if(e.getCurrentItem().getType().equals(Material.MUSHROOM_SOUP)) {
                 playerWaring.addWarning();
                 if(serverWarningConfig.isMuteWarning(playerWaring.getWarnings())) {
-                    WarningCommand.isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
                     Player mutePlayer = Bukkit.getPlayer(name);
-                    if(mutePlayer == null) { return; }
-                    mutePlayer.sendMessage(WarningCommand.ChatStyle("경고 "+playerWaring.getWarnings()+"회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
-                    mutePlayer.sendMessage(WarningCommand.ChatStyle("남은 시간 : "
-                            +ConfigWarningGUI.transSec(serverWarningConfig.getMute(playerWaring.getWarnings()))));
-                    mutePlayer.chat(" ");
+                    if(mutePlayer == null) {
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+                        UUID uuid = offlinePlayer.getUniqueId();
+                        WarningCommand.isMute.put(name,serverWarningConfig.getMute(playerWaring.getWarnings()));
+                        playerWaring.startMute(uuid);
+                        player.sendMessage(WarningCommand.ChatStyle(offlinePlayer.getName() + "님이 경고누적으로 뮤트상태가 시작됩니다!"));
+                    } else {
+                        WarningCommand.isMute.put(name, serverWarningConfig.getMute(playerWaring.getWarnings()));
+                        playerWaring.startMute(mutePlayer.getUniqueId());
+                        mutePlayer.sendMessage(WarningCommand.ChatStyle("경고 " + playerWaring.getWarnings() + "회가 누적되어 당신은 지금부터 뮤트상태가 활성화됩니다."));
+                        mutePlayer.sendMessage(WarningCommand.ChatStyle("남은 시간 : "
+                                + ConfigWarningGUI.transSec(serverWarningConfig.getMute(playerWaring.getWarnings()))));
+                        player.sendMessage(WarningCommand.ChatStyle(player.getName() + "님이 경고누적으로 뮤트상태가 시작됩니다!"));
+                    }
                 }
                 if(serverWarningConfig.isBanWarning(playerWaring.getWarnings())) {
                     playerWaring.changeBan();
                     playerWaring.setBanTime(serverWarningConfig.getBan(playerWaring.getWarnings()));
                     Bukkit.getBanList(BanList.Type.NAME).addBan(name,"경고누적",
-                            new Date(System.currentTimeMillis()+playerWaring.getBanTime()* 1000L),player.getName());
+                            new Date(System.currentTimeMillis()+serverWarningConfig.getBan(playerWaring.getWarnings())* 1000L),player.getName());
                     Player banPlayer = Bukkit.getPlayer(name);
-                    if(banPlayer == null) { return; }
+                    player.sendMessage(WarningCommand.ChatStyle(player.getName() + "님이 경고누적으로 정지상태가 시작됩니다."));
+                    if(banPlayer == null) return;
                     banPlayer.kickPlayer("차단되었습니다. 사유 : 경고누적");
-
                 }
                 playerWaring.addCause(playerWaring.getWarnings(),null);
                 Date date = new Date();
                 playerWaring.addDay(playerWaring.getWarnings(),date);
                 player.sendMessage(WarningCommand.ChatStyle(name+"님의 경고가 증가했습니다."));
                 player.openInventory(warningGUI.getInv());
-
             }
             if(e.getCurrentItem().getType().equals(Material.BOWL)) {
                 playerWaring.reduceWarning();
@@ -94,7 +104,7 @@ public class WarningEvent implements Listener {
                     serverWarningConfig.addMuteWarningCount();
                     player.openInventory(configWarningGUI.getInv());
                 } else if(e.getClick() == ClickType.RIGHT) {
-                    if(serverWarningConfig.getMuteWarnings() == 0) { return; }
+                    if(serverWarningConfig.getMuteWarnings() == 0)  return;
                     serverWarningConfig.reduceMuteWarningCount();
                     player.openInventory(configWarningGUI.getInv());
                 }
@@ -104,7 +114,7 @@ public class WarningEvent implements Listener {
                     serverWarningConfig.addBanWarningCount();
                     player.openInventory(configWarningGUI.getInv());
                 }  else if(e.getClick() == ClickType.RIGHT) {
-                    if(serverWarningConfig.getBanWarnings() == 0) { return; }
+                    if(serverWarningConfig.getBanWarnings() == 0)  return;
                     serverWarningConfig.reduceBanWarningCount();
                     player.openInventory(configWarningGUI.getInv());
                 }
@@ -170,8 +180,8 @@ public class WarningEvent implements Listener {
                 player.openInventory(configWarningGUI.getInv());
             }
             if(e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.WHITE+"§l밴 적용하기")) {
-                if(serverWarningConfig.isMuteWarning(serverWarningConfig.getMuteWarnings())
-                        && serverWarningConfig.isMuteTime(serverWarningConfig.getMuteTime())) {
+                if(serverWarningConfig.isBanWarning(serverWarningConfig.getMuteWarnings())
+                        && serverWarningConfig.isBanTime(serverWarningConfig.getMuteTime())) {
                     player.sendMessage(WarningCommand.ChatStyle("이미 적용되었습니다."));
                     return;
                 }
@@ -197,51 +207,23 @@ public class WarningEvent implements Listener {
     @EventHandler
     public void onMute(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
-        if(!WarningCommand.isMute.containsKey(player.getName())) { return; }
+        if (!WarningCommand.isMute.containsKey(player.getName())) return;
 
         PlayerWaring playerWaring = PlayerWaring.getPlayerWarning(player.getUniqueId());
 
-        if(playerWaring.isMute()) {
+        if (playerWaring.isMute()) {
             e.setCancelled(true);
             player.sendMessage(WarningCommand.ChatStyle("현재 뮤트상태입니다."));
-            player.sendMessage(WarningCommand.ChatStyle("남은시간 : "+ ConfigWarningGUI.transSec(playerWaring.getMuteTime())));
-            return;
+            player.sendMessage(WarningCommand.ChatStyle("남은시간 : " + ConfigWarningGUI.transSec(playerWaring.getMuteTime())));
         }
-
-        e.setCancelled(true);
-        playerWaring.changeMute();
-        if(playerWaring.getMuteTime() == 0) {
-            playerWaring.setMuteTime(WarningCommand.isMute.get(player.getName()));
-        } else {
-            playerWaring.setMuteTime(playerWaring.getMuteTime());
-        }
-        player.sendMessage(WarningCommand.ChatStyle("뮤트가 활성화 되었습니다."));
-
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                if(playerWaring.getMuteTime() == 0) {
-                    Player mutePlayer = Bukkit.getPlayer(playerWaring.getUUID());
-                    if(mutePlayer != null) {
-                        mutePlayer.sendMessage(WarningCommand.ChatStyle("뮤트가 해제되었습니다."));
-                    }
-                    e.setCancelled(false);
-                    WarningCommand.isMute.remove(player.getName());
-                    playerWaring.changeMute();
-                    cancel();
-                    return;
-                }
-                playerWaring.reduceMuteTime();
-            }
-        }.runTaskTimer(Warning.instance, 0,20);
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
-        if(WarningCommand.isMute.containsKey(player.getName())) {
-            player.chat(" ");
+        PlayerWaring playerWaring = PlayerWaring.getPlayerWarning(player.getUniqueId());
+        if(playerWaring.isBan()) {
+            playerWaring.changeBan();
         }
 
     }

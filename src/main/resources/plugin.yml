@@ -3,3 +3,6 @@ version: 1.0.2
 main: warning.warning.Warning
 commands:
   경고:
+
+permissions:
+  Warning.police:

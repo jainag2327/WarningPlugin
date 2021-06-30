@@ -1,4 +1,4 @@
-package warning.warning;
+package warning.warning.GUI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import warning.warning.Data.ServerWarningConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;

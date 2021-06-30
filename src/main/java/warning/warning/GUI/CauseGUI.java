@@ -1,4 +1,4 @@
-package warning.warning;
+package warning.warning.GUI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,6 +9,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import warning.warning.Data.PlayerWaring;
+import warning.warning.Warning;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

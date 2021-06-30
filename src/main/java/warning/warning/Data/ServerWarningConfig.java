@@ -1,4 +1,4 @@
-package warning.warning;
+package warning.warning.Data;
 
 import com.google.gson.Gson;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -38,6 +38,8 @@ public class ServerWarningConfig {
     public boolean isMuteTime(int time) { return warningMute.containsValue(time); }
 
     public boolean isBanWarning(int warning) { return warningBan.containsKey(warning); }
+
+    public boolean isBanTime(int time) { return warningBan.containsValue(time); }
 
     public void addMuteWarning(int warning, int time) { warningMute.put(warning, time); }
 

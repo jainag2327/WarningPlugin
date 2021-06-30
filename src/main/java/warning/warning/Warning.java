@@ -5,6 +5,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import warning.warning.Data.PlayerWaring;
+import warning.warning.Data.ServerWarningConfig;
+import warning.warning.subWarning.WarningCommand;
+import warning.warning.subWarning.WarningEvent;
 
 import java.io.*;
 import java.util.UUID;
@@ -41,11 +45,8 @@ public final class Warning extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new WarningEvent(),this);
         for(UUID uuid : PlayerWaring.warMap.keySet()) {
             PlayerWaring playerWaring = PlayerWaring.getPlayerWarning(uuid);
-            playerWaring.unMute();
-            Player player = instance.getServer().getPlayer(uuid);
-            if(player == null) { continue; }
-            if(WarningCommand.isMute.containsKey(player.getName())) {
-                player.chat(" ");
+            if(playerWaring.isMute()) {
+                playerWaring.startMute(uuid);
             }
         }
     }
